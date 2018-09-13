@@ -28,13 +28,16 @@ while process[0].cycles > 0
 
 print out:
 */
+
+ printf("FCFS\n");
+    printf("time\tPID\n");
 }
 
 void srt(){
 /*
 input: number of process, process info array
 do sortest remaining time maaaaaan
-*/
+*/~
 }
 
 void rr(){
