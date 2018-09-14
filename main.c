@@ -10,28 +10,30 @@ struct process{
     // active?
 };
 
-void fcfs(struct process *processQue){
-/*
- Takes in the number of process and the proccess info: then using
- the first come first serve method prints out each step of the process execution
-
- make a que of structs arraganged by lowest arrival time if 2 have the same arrival time lowest PID first 
-
-the execute in that order.
-while process[0].cycles > 0
-    process1.cycles -= 1
-
-
-print out:
-*/
-
-
-    for(int i = 0; i < 3; i++){
-        printf("%d\n", processQue[i].id);
+void fcfs(struct process *processQue, int processes){
+    int time = 1;
+    int compare(const void *a, const void *b){
+        struct process *ia = (struct process *)a;
+        struct process *ib = (struct process *)b;
+        int same = (ia -> arrival - ib -> arrival);
+        if (same = 0)
+            return (ia -> id - ib -> id);
+        else
+            same;
     }
+
+    qsort(processQue, processes, sizeof(struct process), compare);
 
     printf("FCFS\n");
     printf("time\tPID\n");
+    for(int i = 0; i < processes ; i++){
+        int jcycles = processQue[i].cycles;
+        for(int a = 0; a < jcycles; a ++){
+            printf("%d\t%d\n", time, processQue[i].id);
+            processQue[i].cycles -= 1;
+            time++;
+        }
+    }
 }
 
 void srt(){
@@ -90,6 +92,7 @@ int main(int argc, char *argv[]){
         fgets(buffer, 50, processFile);
         for(int i = 0; i < processes; i++){
             fscanf(processFile, "%d %*c %d %*c %d", &id, &arrival, &cycles);
+            //add in error handling
                 for(int a = 0; a < processes; a++){
                     processQue[i].id = id;
                     processQue[i].arrival = arrival;
@@ -100,7 +103,7 @@ int main(int argc, char *argv[]){
         }
     }
 
-    fcfs(processQue);
+    fcfs(processQue, processes);
 
     fclose(processFile);
     return 0;
