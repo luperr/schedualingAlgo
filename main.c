@@ -43,57 +43,32 @@ do sortest remaining time maaaaaan
 */
 }
 
-struct process checkForNewProcess(int processes, struct process *processQue, struct process *activeQue, int time){
-    for(int i = 0; i < processes; i++){
-        if(processQue[i].arrival == time){
-            for(int j = 0; j < processes; j++)
-            if(activeQue[j].id == 0){
-                activeQue[j] = processQue[i];
-                break;
-            }  
-        }
-    }
-    return *activeQue;
-}
-
 void rr(struct process *processQue, int processes, int quantum){\
     int time = 0;
-
+    int active = 0;
+    int sum = 0;
     qsort(processQue, processes, sizeof(struct process), compare);
-
-    struct process activeQue[processes];
-    for(int i = 0; i < processes; i++){
-        activeQue[i].id = 0;
+    
+    for(int i=0; i < processes; i++){
+        sum += processQue[i].cycles;
     }
-
-    //append to active que
-    //make a call to this at the end of every a process ends or quantom is up...
-
     printf("RR(%d)\n", quantum);
     printf("time\tPID\n");
-    *activeQue = checkForNewProcess(processes, processQue, activeQue, time);
-   
-   int a = 20;
-    while(a > 0){
-        for(int i = 0; i < quantum; i++){
-            printf("%d\t%d\n",time, activeQue[0].id);
-            time++;
-            activeQue[0].cycles -= 1;
-            if(activeQue[0].cycles <= 0){
-                break;
+    while(sum > 0){
+        if(processQue[active].arrival <= time && processQue[active].cycles != 0){
+            printf("%d\t%d\n",time, processQue[active].id);
+            for(int j=0; j < quantum; j++){
+                processQue[active].cycles -= 1;
             }
         }
-        struct process temp = activeQue[0];
-        for(int i = 0; i < (processes - 1); i++){
-            activeQue[i] = activeQue[i+1];
-        }
-        activeQue[processes] = temp;
-        *activeQue = checkForNewProcess(processes, processQue, activeQue, time);
-        a--;
-    }
+        active += 1;
+        if(active > (processes - 1))
+            active = 0;  
+
+         time++;     
+        sum -= 1;
+   }
 }
-
-
 
 void avgWait(){
     /*
@@ -148,10 +123,13 @@ int main(int argc, char *argv[]){
         }
     }
 
-    //fcfs(processQue, processes);
 
-    rr(processQue, processes, 2);
-    //rr(processQue, processes, 4);
+    //need to fix 
+    //fcfs(processQue, processes);
+    printf("\n\n");
+    //rr(processQue, processes, 2);
+    printf("\n\n");
+    rr(processQue, processes, 4);
 
     fclose(processFile);
     return 0;
