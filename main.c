@@ -19,6 +19,16 @@ int compare(const void *a, const void *b){
             same;
 }
 
+int compareCycle(const void *a, const void *b){
+    struct process *ia = (struct process *)a;
+    struct process *ib = (struct process *)b;
+    int same = (ia -> cycles - ib -> cycles);
+        if (same = 0)
+            return (ia -> id - ib -> id);
+        else
+            same;
+}
+
 void fcfs(struct process *processQue, int processes){
     int time = 0;
   
@@ -36,11 +46,36 @@ void fcfs(struct process *processQue, int processes){
     }
 }
 
-void srt(){
-/*
-input: number of process, process info array
-do sortest remaining time maaaaaan
-*/
+void srt(struct process *processQue, int processes){
+    int time = 0;
+    int sum = 0;
+    int n = 0;
+    qsort(processQue, processes, sizeof(struct process), compare);
+    for(int i=0; i < processes; i++){
+        sum += processQue[i].cycles;
+    }
+
+    printf("SRT\n");
+    printf("time\tPID\n");
+    while(sum > 0){
+        for(int i = 0; i < processes; i++){
+            if(processQue[i].arrival == time && time > 1){
+                qsort(processQue, processes, sizeof(struct process), compareCycle);
+            }
+        }
+        printf("%d\t%d\n", time, processQue[n].id);
+        processQue[n].cycles -= 1;
+        if (processQue[n].cycles == 0){
+            n++;
+        }
+        if(n > 4)
+            n = 0;
+        else if(n > 4 && processQue[n].cycles == 0){
+            break;
+        }
+        time++;
+        sum--;
+    }
 }
 
 void rr(struct process *processQue, int processes, int quantum){\
@@ -119,17 +154,46 @@ int main(int argc, char *argv[]){
                     processQue[i].cycles = cycles;
                     processQue[i].turnaround = 0;
                     processQue[i].cyclesWaiting = 0;
-            }
+                }
         }
     }
 
+    struct process pfcfs[processes];
+    struct process psrt[processes];
+    struct process prr2[processes];
+    struct process prr4[processes];
+
+    for(int i = 0; i < processes; i++){
+        pfcfs[i].id = processQue[i].id;
+        psrt[i].id = processQue[i].id;
+        prr2[i].id = processQue[i].id;
+        prr4[i].id = processQue[i].id;
+        pfcfs[i].arrival = processQue[i].arrival;
+        psrt[i].arrival = processQue[i].arrival;
+        prr2[i].arrival = processQue[i].arrival;
+        prr4[i].arrival = processQue[i].arrival;
+        pfcfs[i].cycles = processQue[i].cycles;
+        psrt[i].cycles = processQue[i].cycles;
+        prr2[i].cycles = processQue[i].cycles;
+        prr4[i].cycles = processQue[i].cycles;
+        pfcfs[i].turnaround = processQue[i].turnaround;
+        psrt[i].turnaround = processQue[i].turnaround;
+        prr2[i].turnaround = processQue[i].turnaround;
+        prr4[i].turnaround = processQue[i].turnaround;
+        pfcfs[i].cyclesWaiting = processQue[i].cyclesWaiting;
+        psrt[i].cyclesWaiting = processQue[i].cyclesWaiting;
+        prr2[i].cyclesWaiting = processQue[i].cyclesWaiting;
+        prr4[i].cyclesWaiting = processQue[i].cyclesWaiting;
+    }
 
     //need to fix 
-    //fcfs(processQue, processes);
+    fcfs(pfcfs, processes);
     printf("\n\n");
-    //rr(processQue, processes, 2);
+    srt(psrt, processes);
     printf("\n\n");
-    rr(processQue, processes, 4);
+    rr(prr2, processes, 2);
+    printf("\n\n");
+    rr(prr4, processes, 4);
 
     fclose(processFile);
     return 0;
