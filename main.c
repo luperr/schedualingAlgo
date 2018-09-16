@@ -29,6 +29,14 @@ int compareCycle(const void *a, const void *b){
             same;
 }
 
+float avgTurnaround(struct process *processQue, int processes){
+    int sum = 0;
+    for(int i=0; i < processes; i++){
+        sum += processQue[i].turnaround;
+    }
+    return sum / processes;
+}
+
 void fcfs(struct process *processQue, int processes){
     int time = 0;
   
@@ -42,8 +50,14 @@ void fcfs(struct process *processQue, int processes){
             printf("%d\t%d\n", time, processQue[i].id);
             processQue[i].cycles -= 1;
             time++;
+            if(processQue[i].cycles <= 1){
+                processQue[i].turnaround = time - processQue[i].arrival;
+            }
         }
     }
+    float a = avgTurnaround(processQue, processes);
+    printf("Average waiting time: \n");
+    printf("Average Turnaround Time: %.2f\n", a);
 }
 
 void srt(struct process *processQue, int processes){
@@ -103,18 +117,6 @@ void rr(struct process *processQue, int processes, int quantum){\
          time++;     
         sum -= 1;
    }
-}
-
-void avgWait(){
-    /*
-    calulates the average wait time of all the process
-    */
-}
-
-void avgTurnaround(){
-/*
-    calculates the average turn around time for each process
-*/
 }
 
 void remove_newline(char string[], int length) {
@@ -186,7 +188,6 @@ int main(int argc, char *argv[]){
         prr4[i].cyclesWaiting = processQue[i].cyclesWaiting;
     }
 
-    //need to fix 
     fcfs(pfcfs, processes);
     printf("\n\n");
     srt(psrt, processes);
