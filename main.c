@@ -29,16 +29,25 @@ int compareCycle(const void *a, const void *b){
             same;
 }
 
-float avgTurnaround(struct process *processQue, int processes){
-    int sum = 0;
+float avgTurnaround(struct process *processQue, float processes){
+    float sum = 0.0;
     for(int i=0; i < processes; i++){
         sum += processQue[i].turnaround;
     }
     return sum / processes;
 }
 
+float avgWait(struct process *processQue, int processes){
+    float sum = 0.0;
+    for(int i=0; i < processes; i++){
+        sum += processQue[i].cyclesWaiting;
+    }
+    return sum / processes;
+}
+
 void fcfs(struct process *processQue, int processes){
     int time = 0;
+
   
     qsort(processQue, processes, sizeof(struct process), compare);
 
@@ -46,6 +55,7 @@ void fcfs(struct process *processQue, int processes){
     printf("time\tPID\n");
     for(int i = 0; i < processes ; i++){
         int jcycles = processQue[i].cycles;
+        processQue[i].cyclesWaiting -= processQue[i].cycles;
         for(int a = 0; a < jcycles; a ++){
             printf("%d\t%d\n", time, processQue[i].id);
             processQue[i].cycles -= 1;
@@ -53,10 +63,16 @@ void fcfs(struct process *processQue, int processes){
             if(processQue[i].cycles <= 1){
                 processQue[i].turnaround = time - processQue[i].arrival;
             }
+            if(processQue[i].arrival == 0){
+                processQue[i].cyclesWaiting = 0;
+            } else if(processQue[i].cycles <= 1){
+                processQue[i].cyclesWaiting = time - processQue[i].arrival;
+            }
         }
     }
     float a = avgTurnaround(processQue, processes);
-    printf("Average waiting time: \n");
+    float b = avgWait(processQue, processes);
+    printf("\nAverage waiting time: %.2f\n", b);
     printf("Average Turnaround Time: %.2f\n", a);
 }
 
@@ -90,6 +106,10 @@ void srt(struct process *processQue, int processes){
         time++;
         sum--;
     }
+    float a = avgTurnaround(processQue, processes);
+    float b = avgWait(processQue, processes);
+    printf("\nAverage waiting time: %.2f\n", b);
+    printf("Average Turnaround Time: %.2f\n", a);
 }
 
 void rr(struct process *processQue, int processes, int quantum){\
@@ -114,9 +134,13 @@ void rr(struct process *processQue, int processes, int quantum){\
         if(active > (processes - 1))
             active = 0;  
 
-         time++;     
+        time++;     
         sum -= 1;
    }
+    float a = avgTurnaround(processQue, processes);
+    float b = avgWait(processQue, processes);
+    printf("\nAverage waiting time: %.2f\n", b);
+    printf("Average Turnaround Time: %.2f\n", a);
 }
 
 void remove_newline(char string[], int length) {
