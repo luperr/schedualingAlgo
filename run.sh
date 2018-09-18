@@ -1,4 +1,4 @@
 #!/bin/bash
 
 gcc -o main main.c
-./main spec.txt
+./main $1
